@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "MikeMacro.Core/1.0.0": {
+        "runtime": {
+          "MikeMacro.Core.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MikeMacro.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

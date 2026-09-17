@@ -1,0 +1,12 @@
+/workspaces/MikeMacro/src/MikeMacro.Core/bin/Debug/net8.0/MikeMacro.Core.deps.json
+/workspaces/MikeMacro/src/MikeMacro.Core/bin/Debug/net8.0/MikeMacro.Core.dll
+/workspaces/MikeMacro/src/MikeMacro.Core/bin/Debug/net8.0/MikeMacro.Core.pdb
+/workspaces/MikeMacro/src/MikeMacro.Core/obj/Debug/net8.0/MikeMacro.Core.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/MikeMacro/src/MikeMacro.Core/obj/Debug/net8.0/MikeMacro.Core.AssemblyInfoInputs.cache
+/workspaces/MikeMacro/src/MikeMacro.Core/obj/Debug/net8.0/MikeMacro.Core.AssemblyInfo.cs
+/workspaces/MikeMacro/src/MikeMacro.Core/obj/Debug/net8.0/MikeMacro.Core.csproj.CoreCompileInputs.cache
+/workspaces/MikeMacro/src/MikeMacro.Core/obj/Debug/net8.0/MikeMacro.Core.sourcelink.json
+/workspaces/MikeMacro/src/MikeMacro.Core/obj/Debug/net8.0/MikeMacro.Core.dll
+/workspaces/MikeMacro/src/MikeMacro.Core/obj/Debug/net8.0/refint/MikeMacro.Core.dll
+/workspaces/MikeMacro/src/MikeMacro.Core/obj/Debug/net8.0/MikeMacro.Core.pdb
+/workspaces/MikeMacro/src/MikeMacro.Core/obj/Debug/net8.0/ref/MikeMacro.Core.dll
