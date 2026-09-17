@@ -125,6 +125,26 @@ public sealed class MacroCoreTests
         Assert.Throws<ArgumentException>(() => recorder.Record(new KeyAction("B"), 10));
     }
 
+    [Fact]
+    public void Recording_session_forwards_events_and_stops_capture()
+    {
+        var capture = new FakeCapture();
+        using var session = new MacroRecordingSession(capture, new MacroRecorder());
+
+        session.Start();
+        capture.Publish(new KeyAction("A"), 0);
+        capture.Publish(new KeyAction("B"), 40);
+        var macro = session.Stop("Captured");
+
+        Assert.Equal([
+            new KeyAction("A"),
+            new DelayAction(40),
+            new KeyAction("B")
+        ], macro.Actions);
+        Assert.False(capture.IsCapturing);
+        Assert.Equal(1, capture.StopCount);
+    }
+
     private sealed class RecordingBackend : IInputBackend
     {
         public List<string> Events { get; } = [];
@@ -160,5 +180,27 @@ public sealed class MacroCoreTests
             ReleaseCount++;
             return ValueTask.CompletedTask;
         }
+    }
+
+    private sealed class FakeCapture : IInputCapture
+    {
+        public event EventHandler<CapturedInputEventArgs>? InputCaptured;
+
+        public bool IsCapturing { get; private set; }
+
+        public int StopCount { get; private set; }
+
+        public void Start() => IsCapturing = true;
+
+        public void Stop()
+        {
+            IsCapturing = false;
+            StopCount++;
+        }
+
+        public void Publish(MacroAction action, long timestamp) =>
+            InputCaptured?.Invoke(this, new CapturedInputEventArgs(timestamp, action));
+
+        public void Dispose() => Stop();
     }
 }

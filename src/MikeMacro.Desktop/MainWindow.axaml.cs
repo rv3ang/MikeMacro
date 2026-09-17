@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using MikeMacro.Core.Models;
 using MikeMacro.Core.Playback;
+using MikeMacro.Core.Recording;
 using MikeMacro.Core.Triggers;
 #if NET8_0_WINDOWS
 using Avalonia.Platform;
@@ -18,6 +19,7 @@ public partial class MainWindow : Window
 #if NET8_0_WINDOWS
     private WindowsGlobalHotkeyService? globalHotkeys;
     private WindowsWindowMessageBridge? hotkeyBridge;
+    private MacroRecordingSession? recordingSession;
 #endif
     private readonly Macro macro = new("Demo sequence", [
         new KeyAction("Ctrl+S"),
@@ -35,6 +37,10 @@ public partial class MainWindow : Window
         Closed += WindowClosed;
         profile = new MacroProfile("Default", [macro], [new HotkeyTrigger("CTRL+S", macro.Name)]);
         coordinator = new MacroExecutionCoordinator(new MacroPlayer(new PreviewInputBackend()));
+    #if NET8_0_WINDOWS
+        recordingSession = new MacroRecordingSession(new WindowsInputCapture(), new MacroRecorder());
+        recordingSession.ActionCaptured += RecordingActionCaptured;
+    #endif
         Actions.Add("Press Ctrl+S");
         Actions.Add("Type \"MikeMacro preview\"");
         DataContext = this;
@@ -64,8 +70,10 @@ public partial class MainWindow : Window
 #if NET8_0_WINDOWS
         hotkeyBridge?.Dispose();
         globalHotkeys?.Dispose();
+        recordingSession?.Dispose();
         hotkeyBridge = null;
         globalHotkeys = null;
+        recordingSession = null;
 #endif
     }
 
@@ -92,6 +100,64 @@ public partial class MainWindow : Window
         DataContext = null;
         DataContext = this;
     }
+
+    private void RecordClick(object? sender, RoutedEventArgs args)
+    {
+#if NET8_0_WINDOWS
+        try
+        {
+            recordingSession?.Start();
+            RecordButton.IsEnabled = false;
+            StopRecordingButton.IsEnabled = true;
+            Status = "Recording keyboard and mouse input...";
+        }
+        catch (Exception error)
+        {
+            Status = $"Recording unavailable: {error.Message}";
+        }
+#else
+        Status = "Recording is currently available on Windows only.";
+#endif
+        DataContext = null;
+        DataContext = this;
+    }
+
+    private void StopRecordingClick(object? sender, RoutedEventArgs args)
+    {
+#if NET8_0_WINDOWS
+        try
+        {
+            var recorded = recordingSession?.Stop("Recorded macro");
+            RecordButton.IsEnabled = true;
+            StopRecordingButton.IsEnabled = false;
+            Status = recorded is null
+                ? "No recording was active."
+                : $"Recorded {recorded.Actions.Count} actions.";
+        }
+        catch (Exception error)
+        {
+            RecordButton.IsEnabled = true;
+            StopRecordingButton.IsEnabled = false;
+            Status = $"Could not finish recording: {error.Message}";
+        }
+#else
+        Status = "Recording is currently available on Windows only.";
+#endif
+        DataContext = null;
+        DataContext = this;
+    }
+
+#if NET8_0_WINDOWS
+    private void RecordingActionCaptured(object? sender, CapturedInputEventArgs args)
+    {
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            Status = $"Recording: {args.Action.GetType().Name}";
+            DataContext = null;
+            DataContext = this;
+        });
+    }
+#endif
 
     private sealed class PreviewInputBackend : IInputBackend
     {

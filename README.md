@@ -23,6 +23,7 @@ future device integrations as adapters.
 - `src/MikeMacro.Desktop`: first Avalonia desktop shell with safe preview mode
 - `src/MikeMacro.Platform.Windows`: Windows `SendInput` backend with held-input cleanup
 - `src/MikeMacro.Platform.Windows`: Windows `SendInput` backend and global hotkey registration
+- `src/MikeMacro.Platform.Windows`: Windows low-level keyboard/mouse capture for recording
 
 ## First milestone
 
@@ -49,3 +50,7 @@ dotnet run --project src/MikeMacro.Desktop/MikeMacro.Desktop.csproj
 
 The Windows backend compiles in this environment but must be smoke-tested on a
 Windows session before real input is enabled in the desktop application.
+
+Windows recording uses low-level hooks and ignores injected events, preventing
+MikeMacro playback from recording itself. The first run must be smoke-tested in
+a Windows desktop session with the required input permissions.

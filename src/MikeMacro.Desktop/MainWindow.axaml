@@ -42,6 +42,8 @@
     </Grid>
 
     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+      <Button x:Name="RecordButton" Content="Record" Click="RecordClick" Padding="16,9" />
+      <Button x:Name="StopRecordingButton" Content="Stop recording" Click="StopRecordingClick" IsEnabled="False" Padding="16,9" />
       <Button Content="Preview safely" Click="PreviewClick" Padding="16,9" />
       <Button Content="Play" IsEnabled="False" Padding="16,9" />
     </StackPanel>
