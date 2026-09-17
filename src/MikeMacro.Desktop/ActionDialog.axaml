@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MikeMacro.Desktop.ActionDialog"
+        Title="Add action"
+        Width="420"
+        Height="360"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="22" Spacing="12">
+    <TextBlock Text="Add action" FontSize="22" FontWeight="SemiBold" />
+    <ComboBox x:Name="TypeBox" SelectedIndex="0">
+      <ComboBoxItem Content="Keyboard key" />
+      <ComboBoxItem Content="Text" />
+      <ComboBoxItem Content="Mouse button" />
+      <ComboBoxItem Content="Mouse movement" />
+      <ComboBoxItem Content="Delay" />
+    </ComboBox>
+    <TextBox x:Name="ValueBox" Watermark="Value" />
+    <TextBlock Text="Keyboard: Ctrl+S | Mouse: Left | Move: 100,200 | Delay: milliseconds" Opacity="0.65" TextWrapping="Wrap" />
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+      <Button Content="Cancel" Click="CancelClick" Padding="16,8" />
+      <Button Content="Add" Click="AddClick" Padding="16,8" />
+    </StackPanel>
+  </StackPanel>
+</Window>

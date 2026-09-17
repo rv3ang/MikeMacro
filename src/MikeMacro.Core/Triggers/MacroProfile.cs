@@ -14,6 +14,11 @@ public sealed record MacroProfile(
             throw new ArgumentException("A profile name is required.", nameof(Name));
         }
 
+        if (Macros.Count == 0)
+        {
+            throw new ArgumentException("A profile must contain at least one macro.", nameof(Macros));
+        }
+
         foreach (var macro in Macros)
         {
             macro.Validate();

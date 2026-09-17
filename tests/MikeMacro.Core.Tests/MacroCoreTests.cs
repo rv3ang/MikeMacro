@@ -33,6 +33,35 @@ public sealed class MacroCoreTests
     }
 
     [Fact]
+    public async Task ProjectStore_round_trips_profiles_and_loads_legacy_macros()
+    {
+        var store = new MacroProjectStore();
+        var profile = new MacroProfile("Work", [
+            new Macro("First", [new KeyAction("A")]),
+            new Macro("Second", [new DelayAction(10)])
+        ], [new HotkeyTrigger("CTRL+A", "First")]);
+        await using var profileStream = new MemoryStream();
+
+        await store.SaveProfileAsync(profile, profileStream);
+        profileStream.Position = 0;
+        var restoredProfile = await store.LoadProfileOrMacroAsync(profileStream);
+
+        Assert.Equal(profile.Name, restoredProfile.Name);
+        Assert.Equal(profile.Macros.Select(item => item.Name), restoredProfile.Macros.Select(item => item.Name));
+        Assert.Equal(profile.Macros.Select(item => item.Actions), restoredProfile.Macros.Select(item => item.Actions));
+        Assert.Equal(profile.Triggers, restoredProfile.Triggers);
+
+        await using var macroStream = new MemoryStream();
+        await store.SaveAsync(profile.Macros[0], macroStream);
+        macroStream.Position = 0;
+        var migrated = await store.LoadProfileOrMacroAsync(macroStream);
+
+        Assert.Equal("Default", migrated.Name);
+        Assert.Equal(profile.Macros[0].Name, migrated.Macros[0].Name);
+        Assert.Equal(profile.Macros[0].Actions, migrated.Macros[0].Actions);
+    }
+
+    [Fact]
     public async Task Player_executes_actions_in_order_and_repeats()
     {
         var backend = new RecordingBackend();
