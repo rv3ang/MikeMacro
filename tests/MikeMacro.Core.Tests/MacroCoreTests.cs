@@ -1,5 +1,6 @@
 using MikeMacro.Core.Models;
 using MikeMacro.Core.Playback;
+using MikeMacro.Core.Recording;
 using MikeMacro.Core.Storage;
 using MikeMacro.Core.Triggers;
 using Xunit;
@@ -91,6 +92,37 @@ public sealed class MacroCoreTests
         Assert.True(result.Succeeded);
         Assert.Equal(["text:saved"], backend.Events);
         Assert.False(coordinator.IsRunning);
+    }
+
+    [Fact]
+    public void Recorder_preserves_timing_as_delay_actions()
+    {
+        var recorder = new MacroRecorder();
+        recorder.Start();
+
+        recorder.Record(new KeyAction("A"), 100);
+        recorder.Record(new KeyAction("B"), 250);
+        recorder.Record(new TextAction("done"), 250);
+
+        var macro = recorder.Stop("Recorded");
+
+        Assert.Equal([
+            new KeyAction("A"),
+            new DelayAction(150),
+            new KeyAction("B"),
+            new TextAction("done")
+        ], macro.Actions);
+        Assert.False(recorder.IsRecording);
+    }
+
+    [Fact]
+    public void Recorder_rejects_out_of_order_events()
+    {
+        var recorder = new MacroRecorder();
+        recorder.Start();
+        recorder.Record(new KeyAction("A"), 20);
+
+        Assert.Throws<ArgumentException>(() => recorder.Record(new KeyAction("B"), 10));
     }
 
     private sealed class RecordingBackend : IInputBackend

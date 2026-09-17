@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MikeMacro.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2206a4bbeb83081ad06272ba75dc5cd768ec087d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a70fc874475167f9a5e04f969e29032f47da05f")]
 [assembly: System.Reflection.AssemblyProductAttribute("MikeMacro.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MikeMacro.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
