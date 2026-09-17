@@ -22,6 +22,7 @@ future device integrations as adapters.
 - `docs/EXECUTION_PLAN.md`: full roadmap, flows, architecture, and folder structure
 - `src/MikeMacro.Desktop`: first Avalonia desktop shell with safe preview mode
 - `src/MikeMacro.Platform.Windows`: Windows `SendInput` backend with held-input cleanup
+- `src/MikeMacro.Platform.Windows`: Windows `SendInput` backend and global hotkey registration
 
 ## First milestone
 

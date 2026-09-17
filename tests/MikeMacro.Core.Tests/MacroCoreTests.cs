@@ -1,6 +1,7 @@
 using MikeMacro.Core.Models;
 using MikeMacro.Core.Playback;
 using MikeMacro.Core.Storage;
+using MikeMacro.Core.Triggers;
 using Xunit;
 
 namespace MikeMacro.Core.Tests;
@@ -57,6 +58,39 @@ public sealed class MacroCoreTests
         Assert.Equal(PlaybackStatus.Cancelled, result.Status);
         Assert.Empty(backend.Events);
         Assert.Equal(1, backend.ReleaseCount);
+    }
+
+    [Fact]
+    public void Profile_normalizes_gestures_and_rejects_conflicts()
+    {
+        var macro = new Macro("Save", [new KeyAction("S")]);
+        var profile = new MacroProfile("Default", [macro], [
+            new HotkeyTrigger("shift + ctrl + s", "Save")
+        ]);
+
+        Assert.Equal("CTRL+SHIFT+S", profile.Resolve("CTRL+S+SHIFT") is not null
+            ? profile.Triggers[0].NormalizedGesture
+            : string.Empty);
+        Assert.Throws<ArgumentException>(() => new MacroProfile("Default", [macro], [
+            new HotkeyTrigger("CTRL+S", "Save"),
+            new HotkeyTrigger("s + ctrl", "Save")
+        ]).Validate());
+    }
+
+    [Fact]
+    public async Task Coordinator_dispatches_hotkey_and_prevents_overlap()
+    {
+        var backend = new RecordingBackend();
+        var coordinator = new MacroExecutionCoordinator(new MacroPlayer(backend));
+        var profile = new MacroProfile("Default", [
+            new Macro("Save", [new TextAction("saved")])
+        ], [new HotkeyTrigger("CTRL+S", "Save")]);
+
+        var result = await coordinator.ExecuteAsync(profile, "s + ctrl");
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(["text:saved"], backend.Events);
+        Assert.False(coordinator.IsRunning);
     }
 
     private sealed class RecordingBackend : IInputBackend
