@@ -19,6 +19,8 @@ future device integrations as adapters.
 
 - `src/MikeMacro.Core`: platform-neutral models, JSON persistence, and playback
 - `tests/MikeMacro.Core.Tests`: deterministic unit tests using a fake backend
+- `docs/EXECUTION_PLAN.md`: full roadmap, flows, architecture, and folder structure
+- `src/MikeMacro.Desktop`: first Avalonia desktop shell with safe preview mode
 
 ## First milestone
 
@@ -33,3 +35,12 @@ dotnet test
 
 The desktop UI and native backends will be added after the core contract is
 stable. This keeps hardware-specific behavior isolated and testable.
+
+See [docs/EXECUTION_PLAN.md](docs/EXECUTION_PLAN.md) for the complete execution
+plan and the next sprint scope.
+
+To start the desktop shell locally:
+
+```bash
+dotnet run --project src/MikeMacro.Desktop/MikeMacro.Desktop.csproj
+```

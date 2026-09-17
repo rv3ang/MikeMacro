@@ -4,17 +4,45 @@ namespace MikeMacro.Core.Playback;
 
 public sealed class MacroPlayer(IInputBackend input)
 {
-    public async ValueTask PlayAsync(Macro macro, CancellationToken cancellationToken = default)
+    public async ValueTask<PlaybackResult> PlayAsync(
+        Macro macro,
+        IProgress<PlaybackProgress>? progress = null,
+        CancellationToken cancellationToken = default)
     {
         macro.Validate();
+        var completedActions = 0;
 
-        for (var repeat = 0; repeat < macro.RepeatCount; repeat++)
+        try
         {
-            foreach (var action in macro.Actions)
+            for (var repeat = 0; repeat < macro.RepeatCount; repeat++)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                await ExecuteAsync(action, cancellationToken);
+                for (var actionIndex = 0; actionIndex < macro.Actions.Count; actionIndex++)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    progress?.Report(new PlaybackProgress(
+                        macro.Name,
+                        repeat + 1,
+                        macro.RepeatCount,
+                        actionIndex + 1,
+                        macro.Actions.Count));
+                    await ExecuteAsync(macro.Actions[actionIndex], cancellationToken);
+                    completedActions++;
+                }
             }
+
+            return new PlaybackResult(PlaybackStatus.Completed, completedActions);
+        }
+        catch (OperationCanceledException cancellation) when (cancellationToken.IsCancellationRequested)
+        {
+            return new PlaybackResult(PlaybackStatus.Cancelled, completedActions, cancellation);
+        }
+        catch (Exception error)
+        {
+            return new PlaybackResult(PlaybackStatus.Failed, completedActions, error);
+        }
+        finally
+        {
+            await input.ReleaseAllAsync();
         }
     }
 

@@ -5,8 +5,17 @@ public sealed record Macro(
     IReadOnlyList<MacroAction> Actions,
     int RepeatCount = 1)
 {
+    public const int CurrentSchemaVersion = 1;
+
+    public int SchemaVersion { get; init; } = CurrentSchemaVersion;
+
     public Macro Validate()
     {
+        if (SchemaVersion != CurrentSchemaVersion)
+        {
+            throw new InvalidDataException($"Unsupported macro schema version: {SchemaVersion}.");
+        }
+
         if (string.IsNullOrWhiteSpace(Name))
         {
             throw new ArgumentException("A macro name is required.", nameof(Name));

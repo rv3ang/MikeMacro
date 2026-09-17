@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/MikeMacro.Core/MikeMacro.Core.csproj" />
+    <Project Path="src/MikeMacro.Desktop/MikeMacro.Desktop.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/MikeMacro.Core.Tests/MikeMacro.Core.Tests.csproj" />

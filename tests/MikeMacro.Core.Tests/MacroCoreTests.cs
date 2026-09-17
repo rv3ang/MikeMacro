@@ -25,6 +25,7 @@ public sealed class MacroCoreTests
         var restored = await store.LoadAsync(stream);
 
         Assert.Equal(original.Name, restored.Name);
+        Assert.Equal(Macro.CurrentSchemaVersion, restored.SchemaVersion);
         Assert.Equal(original.RepeatCount, restored.RepeatCount);
         Assert.Equal(original.Actions, restored.Actions);
     }
@@ -35,9 +36,11 @@ public sealed class MacroCoreTests
         var backend = new RecordingBackend();
         var macro = new Macro("Sequence", [new KeyAction("Enter"), new TextAction("ok")], RepeatCount: 2);
 
-        await new MacroPlayer(backend).PlayAsync(macro);
+        var result = await new MacroPlayer(backend).PlayAsync(macro);
 
+        Assert.True(result.Succeeded);
         Assert.Equal(["key:Enter:Press", "text:ok", "key:Enter:Press", "text:ok"], backend.Events);
+        Assert.Equal(1, backend.ReleaseCount);
     }
 
     [Fact]
@@ -47,15 +50,20 @@ public sealed class MacroCoreTests
         using var cancellation = new CancellationTokenSource();
         cancellation.Cancel();
 
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            new MacroPlayer(backend).PlayAsync(new Macro("Cancelled", [new TextAction("never")]), cancellation.Token).AsTask());
+        var result = await new MacroPlayer(backend).PlayAsync(
+            new Macro("Cancelled", [new TextAction("never")]),
+            cancellationToken: cancellation.Token);
 
+        Assert.Equal(PlaybackStatus.Cancelled, result.Status);
         Assert.Empty(backend.Events);
+        Assert.Equal(1, backend.ReleaseCount);
     }
 
     private sealed class RecordingBackend : IInputBackend
     {
         public List<string> Events { get; } = [];
+
+        public int ReleaseCount { get; private set; }
 
         public ValueTask SendKeyAsync(KeyAction action, CancellationToken cancellationToken = default)
         {
@@ -78,6 +86,12 @@ public sealed class MacroCoreTests
         public ValueTask TypeTextAsync(TextAction action, CancellationToken cancellationToken = default)
         {
             Events.Add($"text:{action.Text}");
+            return ValueTask.CompletedTask;
+        }
+
+        public ValueTask ReleaseAllAsync(CancellationToken cancellationToken = default)
+        {
+            ReleaseCount++;
             return ValueTask.CompletedTask;
         }
     }

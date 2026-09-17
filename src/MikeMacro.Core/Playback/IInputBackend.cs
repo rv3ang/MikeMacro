@@ -11,4 +11,6 @@ public interface IInputBackend
     ValueTask MoveMouseAsync(MouseMoveAction action, CancellationToken cancellationToken = default);
 
     ValueTask TypeTextAsync(TextAction action, CancellationToken cancellationToken = default);
+
+    ValueTask ReleaseAllAsync(CancellationToken cancellationToken = default);
 }

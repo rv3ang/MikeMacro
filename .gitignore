@@ -1,0 +1,17 @@
+## .NET build output
+[Bb]in/
+[Oo]bj/
+
+## IDE files
+.vs/
+.idea/
+*.user
+*.suo
+
+## Test and coverage output
+TestResults/
+coverage/
+
+## Local tooling and OS files
+.DS_Store
+*.log
