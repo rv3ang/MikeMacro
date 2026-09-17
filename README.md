@@ -21,6 +21,7 @@ future device integrations as adapters.
 - `tests/MikeMacro.Core.Tests`: deterministic unit tests using a fake backend
 - `docs/EXECUTION_PLAN.md`: full roadmap, flows, architecture, and folder structure
 - `src/MikeMacro.Desktop`: first Avalonia desktop shell with safe preview mode
+- `src/MikeMacro.Platform.Windows`: Windows `SendInput` backend with held-input cleanup
 
 ## First milestone
 
@@ -44,3 +45,6 @@ To start the desktop shell locally:
 ```bash
 dotnet run --project src/MikeMacro.Desktop/MikeMacro.Desktop.csproj
 ```
+
+The Windows backend compiles in this environment but must be smoke-tested on a
+Windows session before real input is enabled in the desktop application.
